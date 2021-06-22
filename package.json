@@ -1,10 +1,12 @@
 {
-  "name": "electron-quick-start",
+  "name": "electron-tutorial",
   "version": "1.0.0",
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder",
+    "deploy": "electron-builder --windows nsis:ia32"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -17,6 +19,43 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^13.1.2"
+    "concurrently": "^6.2.0",
+    "cross-env": "^7.0.3",
+    "electron": "^13.1.2",
+    "electron-builder": "^22.11.7",
+    "wait-on": "^5.3.0"
+  },
+  "dependencies": {
+    "electron-is-dev": "^2.0.0",
+    "electron-log": "^4.3.5",
+    "electron-updater": "^4.3.9",
+    "ipp-printer": "^1.0.0"
+  },
+  "build": {
+    "productName": "Electron-Tutorial",
+    "appId": "Electron-Tutorial APP",
+    "asar": true,
+    "protocols": {
+      "name": "Electron-Tutorial",
+      "schemes": [
+        "Electron-Tutorial"
+      ]
+    },
+    "win": {
+      "target": [
+        "zip",
+        "nsis"
+      ],
+      "icon": "./huiicon_Alo_icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "directories": {
+      "buildResources": "./resources/installer/",
+      "output": "./dist/",
+      "app": "."
+    }
   }
 }
