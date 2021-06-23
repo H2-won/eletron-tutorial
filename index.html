@@ -15,13 +15,34 @@
   Chromium <span id="chrome-version"></span>,
   and Electron <span id="electron-version"></span>.
 
-  <button>TEST 버튼</button>
   <div id="holder">
     Drag your file here
   </div>
 
+  <button id="communicationBtn">Main-Renderer Communication</button>
+  <div>
+    <button id="asyncBtn">main으로 ping 보내기</button>
+    <span id="asyncMsg">d</span>
+  </div>
+  <button id="notificationBtn">아이콘 들어간 알림</button>
+
+  <div>
+    <button id="fileDialog">파일 dialog</button>
+    <span id="selectedFile"></span>
+  </div>
+  <button id="errorDialog">에러 dialog</button>
+
+  <div>
+    <button id="infoDialog">인포 dialog</button>
+    <span id="info-selection"></span>
+  </div>
+
+
+
   <!-- You can also require other files to run in this process -->
-  <script src="./renderer.js"></script>
+  <script src="./src/renderer/renderer.js"></script>
+
+  <!-- <script src="./menu.js"></script> -->
 </body>
 
 </html>

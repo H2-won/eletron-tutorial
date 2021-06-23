@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
+const glob = require("glob");
 
 function createWindow() {
   // Create the browser window.
@@ -9,13 +10,18 @@ function createWindow() {
     height: 720,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      // nodeIntegration: true,
-      // contextIsolation: false,
+      nodeIntegration: true,
+      contextIsolation: false,
     },
+    // 상단 메뉴바 숨기기, Alt 누르면 나타남
+    autoHideMenuBar: true,
+    // 작업표시줄에 아이콘 안뜨게
+    skipTaskbar: true,
   });
 
   // and load the index.html of the app.
   mainWindow.loadFile("index.html");
+  mainWindow.setOverlayIcon("./huiIcon.png", "Description for overlay");
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
@@ -36,6 +42,7 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  loadMainProcessFiles();
   createWindow();
 
   app.on("activate", function () {
@@ -54,3 +61,11 @@ app.on("window-all-closed", function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+// Require each JS file in the main-process dir
+function loadMainProcessFiles() {
+  const files = glob.sync(path.join(__dirname, "/src/main/*.js"));
+  files.forEach((file) => {
+    require(file);
+  });
+}
