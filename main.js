@@ -21,21 +21,23 @@ function createWindow() {
 
   // and load the index.html of the app.
   mainWindow.loadFile("index.html");
+
+  // 작업표시줄 아이콘에 작은 이미지 띄워줄때 (디스코드 빨간불 느낌인듯)
   mainWindow.setOverlayIcon("./huiIcon.png", "Description for overlay");
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
   // Modal window 부모 윈도우 비활성화하면서 모달 띄움
-  let child = new BrowserWindow({
-    parent: mainWindow,
-    modal: true,
-    show: false,
-  });
-  child.loadURL("https://resemble.ga");
-  child.once("ready-to-show", () => {
-    child.show();
-  });
+  // let child = new BrowserWindow({
+  //   parent: mainWindow,
+  //   modal: true,
+  //   show: false,
+  // });
+  // child.loadURL("https://resemble.ga");
+  // child.once("ready-to-show", () => {
+  //   child.show();
+  // });
 }
 
 // This method will be called when Electron has finished

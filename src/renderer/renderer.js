@@ -64,7 +64,6 @@ notificationButton.addEventListener("click", () => {
 const selectDirBtn = document.getElementById("fileDialog");
 
 selectDirBtn.addEventListener("click", (event) => {
-  console.log("select");
   ipcRenderer.send("open-file-dialog");
 });
 
@@ -103,4 +102,16 @@ asyncMsgBtn.addEventListener("click", () => {
 ipcRenderer.on("asynchronous-reply", (event, arg) => {
   const message = `Asynchronous message reply: ${arg}`;
   document.getElementById("asyncMsg").innerHTML = message;
+});
+
+const openFileBtn = document.querySelector("#openFileBtn");
+
+openFileBtn.addEventListener("click", () => {
+  ipcRenderer.send("openFile");
+});
+
+ipcRenderer.on("fileData", (event, data) => {
+  console.log(data);
+  document.querySelector("#fileText").innerHTML = data;
+  document.write(data);
 });
