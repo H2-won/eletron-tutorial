@@ -1,16 +1,10 @@
 const { ipcMain, dialog } = require("electron");
 
-ipcMain.on("open-file-dialog", (event) => {
-  dialog.showOpenDialog(
-    {
-      properties: ["openFile", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-directory", files);
-      }
-    }
-  );
+ipcMain.on("open-file-dialog", async (event) => {
+  filepaths = await dialog.showOpenDialog({
+    properties: ["openFile", "multiSelections"],
+  });
+  event.sender.send("selected-directory", filepaths);
 });
 
 ipcMain.on("open-error-dialog", (e) => {
@@ -20,14 +14,14 @@ ipcMain.on("open-error-dialog", (e) => {
   );
 });
 
-ipcMain.on("open-information-dialog", (event) => {
+ipcMain.on("open-information-dialog", async (event) => {
   const options = {
     type: "info",
     title: "Information",
     message: "This is an information dialog. Isn't it nice?",
     buttons: ["Yes", "No"],
   };
-  dialog.showMessageBox(options, (index) => {
-    event.sender.send("information-dialog-selection", index);
-  });
+  // showMessageBox 리턴값 = 누른 버튼의 index값
+  result = await dialog.showMessageBox(options);
+  event.sender.send("information-dialog-selection", result.response);
 });
