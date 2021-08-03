@@ -1,5 +1,6 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Tray, Menu } = require("electron");
+// import path from "path";
 const path = require("path");
 const glob = require("glob");
 
@@ -24,11 +25,16 @@ function createWindow() {
   // and load the index.html of the app.
   mainWindow.loadFile("index.html");
   // 작업표시줄 아이콘에 작은 이미지 띄워줄때 (디스코드 빨간불 느낌인듯)
-  mainWindow.setOverlayIcon("./huiIcon.png", "Description for overlay");
+  // mainWindow.setOverlayIcon("./huiIcon.png", "Description for overlay");
 
-  // close 버튼 누를 시, 종료하지말고 hide
+  // 윈도우 말고 다른 곳을 클릭 시 (포커스에서 벗어날 시 blur 이벤트 발동)
+  // mainWindow.on("blur", () => {
+  //   mainWindow.hide();
+  // });
   mainWindow.on("close", function (e) {
+    // 앱 종료 방지
     e.preventDefault();
+    // 앱 숨김
     mainWindow.hide();
   });
   // Open the DevTools.
@@ -56,32 +62,76 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  loadMainProcessFiles();
-  createTrayIcon();
-  createWindow();
+const gotTheLock = app.requestSingleInstanceLock();
 
-  app.on("activate", function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on("second-instance", (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+      console.log(BrowserWindow.getAllWindows().length);
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.show();
+      mainWindow.focus();
+    }
   });
+
+  // Create mainWindow, load the rest of the app, etc...
+  app.whenReady().then(() => {
+    loadMainProcessFiles();
+    createTrayIcon();
+    createWindow();
+  });
+}
+
+// app.whenReady().then(() => {
+//   loadMainProcessFiles();
+//   createTrayIcon();
+//   createWindow();
+//   // console.log(BrowserWindow.getAllWindows().length);
+//   // if (BrowserWindow.getAllWindows().length === 0) createWindow();
+//   // else mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+
+//   app.on("activate", function () {
+//     // On macOS it's common to re-create a window in the app when the
+//     // dock icon is clicked and there are no other windows open.
+//     console.log(BrowserWindow.getAllWindows().length);
+//     if (BrowserWindow.getAllWindows().length === 0) createWindow();
+//     // mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+//   });
+// });
+
+app.on("activate", (e) => {
+  e.preventDefault();
+  mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
 });
 
 // 트레이 아이콘
 function createTrayIcon() {
-  tray = new Tray("./huiIcon.png"); // 현재 애플리케이션 디렉터리를 기준으로 하려면 `__dirname + '/images/tray.png'` 형식으로 입력해야 합니다.
+  const iconPath = path.join(__dirname, `/huiIcon.png`);
+  tray = new Tray(iconPath); // 현재 애플리케이션 디렉터리를 기준으로 하려면 `__dirname + '/images/tray.png'` 형식으로 입력해야 합니다.
   const contextMenu = Menu.buildFromTemplate([
     { label: "Item1", type: "radio" },
     { label: "Item2", type: "radio" },
     { label: "Item3", type: "radio", checked: true },
     { label: "Item4", type: "radio" },
+    {
+      label: "종료",
+      type: "normal",
+      click() {
+        app.exit();
+      },
+    },
   ]);
-  tray.setToolTip("이것은 나의 애플리케이션 입니다!");
   tray.setContextMenu(contextMenu);
+  tray.setToolTip("이것은 나의 애플리케이션 입니다!");
   tray.on("double-click", () => {
     mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
   });
+  // tray.on("click", () => {
+  //   mainWindow.show();
+  // });
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
